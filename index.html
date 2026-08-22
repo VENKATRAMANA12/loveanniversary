@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Happy 7th Love Anniversary, VR Renuka ❤️</title>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600;700&family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Canvas Confetti -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+  <!-- Stylesheet -->
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- Background Music Player -->
+  <audio id="bg-music" loop>
+    <source src="vr.mpeg" type="audio/mp3">
+  </audio>
+
+  <button id="music-toggle" class="music-btn" title="Toggle Music">
+    🎵 Play Song
+  </button>
+
+  <!-- Floating Heart Shower Button -->
+  <button id="heart-shower-btn" class="heart-shower-btn" title="Shower Love">
+    💖 Send Love
+  </button>
+
+  <!-- Page Step Progress Indicator -->
+  <nav class="step-indicator">
+    <button class="step-dot active" data-step="0" title="Welcome"></button>
+    <button class="step-dot" data-step="1" title="Balloons"></button>
+    <button class="step-dot" data-step="2" title="Quiz"></button>
+    <button class="step-dot" data-step="3" title="Gallery"></button>
+    <button class="step-dot" data-step="4" title="Love Letter"></button>
+  </nav>
+
+  <!-- Main Multi-Page Screen Container -->
+  <main class="page-container">
+
+    <!-- ================= PAGE 1: HERO & COUNTDOWN ================= -->
+    <section class="app-page active" id="page-0">
+      <div class="page-card text-center">
+        <span class="anniversary-badge">✨ 7 Magical Years of Love ✨</span>
+        <h1 class="main-title">Happy 7th Love Anniversary,<br /><span class="highlight-name">VR Renuka ❤️</span></h1>
+        <p class="subtitle">2,557 days of laughter, shared dreams, and endless love.</p>
+
+        <!-- Live Countdown Box -->
+        <div class="countdown-container">
+          <div class="countdown-title">Countdown to August 24, 2026 ✨</div>
+          <div class="countdown-timer" id="countdownTimer">
+            <div class="time-box">
+              <span id="days">00</span>
+              <label>Days</label>
+            </div>
+            <div class="time-box">
+              <span id="hours">00</span>
+              <label>Hours</label>
+            </div>
+            <div class="time-box">
+              <span id="minutes">00</span>
+              <label>Minutes</label>
+            </div>
+            <div class="time-box">
+              <span id="seconds">00</span>
+              <label>Seconds</label>
+            </div>
+          </div>
+        </div>
+
+        <button class="nav-btn next-page-btn" onclick="nextPage()">
+          Start Our Celebration 🎈 ➔
+        </button>
+      </div>
+    </section>
+
+    <!-- ================= PAGE 2: 7 BALLOONS POP GAME ================= -->
+    <section class="app-page" id="page-1">
+      <div class="page-card text-center">
+        <div class="section-header">
+          <h2>Pop the 7 Balloons!</h2>
+          <p>Click each balloon to uncover a secret memory from each year.</p>
+        </div>
+
+        <div class="balloon-container" id="balloonContainer">
+          <div class="balloon" data-year="Year 1" data-message="My 1st double side love is you are my luckiest person in my life ,it start on 24.08.2019.">
+            <span class="balloon-string"></span>
+            <span class="balloon-number">1</span>
+          </div>
+          <div class="balloon" data-year="Year 2" data-message="It is our 2nd year,2020 is most painfull year, we are not seeing everyday but still you miss me.">
+            <span class="balloon-string"></span>
+            <span class="balloon-number">2</span>
+          </div>
+          <div class="balloon" data-year="Year 3" data-message="2021 is also same, i break up you but you still love with me , i am lucky , because you love me more.">
+            <span class="balloon-string"></span>
+            <span class="balloon-number">3</span>
+          </div>
+          <div class="balloon" data-year="Year 4" data-message="2022 is i see you weekly onceday i come in your work place nemilichery, eat your food , that all so good Memories.">
+            <span class="balloon-string"></span>
+            <span class="balloon-number">4</span>
+          </div>
+          <div class="balloon" data-year="Year 5" data-message="Half a decade together! My best friend, my queen, and my entire world.">
+            <span class="balloon-string"></span>
+            <span class="balloon-number">5</span>
+          </div>
+          <div class="balloon" data-year="Year 6" data-message="Building our sweetest traditions and knowing my future belongs with you.">
+            <span class="balloon-string"></span>
+            <span class="balloon-number">6</span>
+          </div>
+          <div class="balloon" data-year="Year 7" data-message="Thank you for 7 years of pure happiness,V.Renuka! ❤️">
+            <span class="balloon-string"></span>
+            <span class="balloon-number">7</span>
+          </div>
+        </div>
+
+        <div class="page-nav-actions">
+          <button class="nav-btn prev-btn" onclick="prevPage()">⬅ Back</button>
+          <button class="nav-btn next-page-btn" onclick="nextPage()">Take The Love Quiz 💖 ➔</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= PAGE 3: COUPLE QUIZ ================= -->
+    <section class="app-page" id="page-2">
+      <div class="page-card">
+        <div class="section-header text-center">
+          <h2>The Love Quiz</h2>
+          <p>Answer all 3 correctly to unlock our special memory gallery, Renuka! 😉</p>
+        </div>
+
+        <div class="quiz-box" id="quizBox">
+          <div id="quizAlert" class="quiz-alert hidden">Oops Renuka! 🙈 Wrong answer! Try again from Question 1! ❤️</div>
+
+          <div id="quizContent">
+            <div class="quiz-progress">
+              <span id="questionCount">Question 1 of 3</span>
+              <div class="progress-bar-bg">
+                <div class="progress-bar-fill" id="progressBar"></div>
+              </div>
+            </div>
+
+            <h3 class="quiz-question" id="quizQuestion">Loading question...</h3>
+            <div class="quiz-options" id="quizOptions"></div>
+          </div>
+
+          <div id="quizResult" class="quiz-result hidden text-center">
+            <div class="result-badge">🏆 100% Soulmate Score! 🏆</div>
+            <h3>You Know Me Best, Renuka!</h3>
+            <p>You got all 3 answers right! You hold the key to my heart forever. ❤️</p>
+          </div>
+        </div>
+
+        <div class="page-nav-actions">
+          <button class="nav-btn prev-btn" onclick="prevPage()">⬅ Back</button>
+          <button class="nav-btn next-page-btn" id="quizNextBtn" style="display: none;" onclick="nextPage()">Our Memories 📸 ➔</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= PAGE 4: PHOTO GALLERY ================= -->
+    <section class="app-page" id="page-3">
+      <div class="page-card text-center">
+        <div class="section-header">
+          <h2>Captured Moments</h2>
+          <p>Snapshots of our beautiful 7-year journey</p>
+        </div>
+
+        <div class="photo-grid">
+          <div class="photo-card">
+            <img src="1.jpeg" alt="Memory 1" />
+            <div class="photo-caption">veeraragavar koil ✨</div>
+          </div>
+          <div class="photo-card">
+            <img src="2.jpeg" alt="Memory 2" />
+            <div class="photo-caption">Tirutani Temple 🌅</div>
+          </div>
+          <div class="photo-card">
+            <img src="3.jpeg" alt="Memory 3" />
+            <div class="photo-caption">it's your favourite pic 💍</div>
+          </div>
+        </div>
+
+        <div class="page-nav-actions">
+          <button class="nav-btn prev-btn" onclick="prevPage()">⬅ Back</button>
+          <button class="nav-btn next-page-btn" onclick="nextPage()">Read My Letter 💌 ➔</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= PAGE 5: LOVE LETTER ================= -->
+    <section class="app-page" id="page-4">
+      <div class="page-card text-center">
+        <div class="section-header">
+          <h2>A Special Letter For You</h2>
+          <p>Click the envelope to read your personal message, Renuka ❤️</p>
+        </div>
+
+        <!-- Clean Animated Envelope (No Text Leaking) -->
+        <div class="envelope-wrapper" id="envelopeWrapper">
+          <div class="envelope">
+            <div class="flap"></div>
+            <div class="pocket"></div>
+            <div class="letter-preview">
+              <div class="letter-seal">💌</div>
+              <span class="preview-text">Tap to Open My Heart</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="page-nav-actions" style="margin-top: 40px;">
+          <button class="nav-btn prev-btn" onclick="prevPage()">⬅ Back</button>
+          <button class="nav-btn primary-btn" onclick="triggerGrandCelebration()">Celebrate Again! 🎆</button>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Personal Full-Screen Love Letter Modal (Opens on Envelope Click) -->
+  <div class="modal" id="personalLetterModal">
+    <div class="letter-modal-card">
+      <span class="close-btn" id="closeLetterModal">&times;</span>
+      <div class="letter-scroll-area">
+        <div class="letter-header-decor">💖 ✨ 💖</div>
+        <h3 class="letter-title">To My Sweetest V.Renuka,</h3>
+        <div class="letter-body-text">
+          <p>
+            7 years ah namma relationship-la evlo sanda, misunderstanding,
+            happy moments, tears, laughter ellame cross panni innum onna irukkom nu ninaikkumbodhu romba special ah feel aagudhu. 
+            🥹❤️ Nee en life-la vandhadhu enakku kidaicha best gift. 
+            Enna purinjukittu, en mistakes-ah forgive panni, 
+            every situation-layum en kooda irundhadhukku romba thanks. 
+            🫂❤️ Namma life-la innum neraya years happy ah, understanding ah, 
+            sandhoshama onna travel pannanum. Un kooda irukkura ovvoru moment-um enakku precious. 
+            7 years mudinjiruchu, aana en love un mela innum first day madhiriye irukku. 
+            ❤️🥰 Forever and always, I Love You So Much! 💕♾️ 
+            Happy 7th Anniversary, My Love! ❤️
+          </p>
+        </div>
+        <span class="signature-text">Forever Yours, ❤️</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Popup for Popped Balloon -->
+  <div class="modal" id="messageModal">
+    <div class="modal-content">
+      <span class="close-btn" id="closeModal">&times;</span>
+      <div class="heart-icon">💖</div>
+      <h3 id="modalYearTitle">Year 1</h3>
+      <p id="modalMessageText">Message goes here...</p>
+    </div>
+  </div>
+
+  <!-- Photo Lightbox / Zoom Modal -->
+  <div class="modal" id="imageModal">
+    <div class="image-modal-content">
+      <span class="close-btn" id="closeImageModal">&times;</span>
+      <img id="modalPreviewImage" src="" alt="Full Preview" />
+      <div id="modalPreviewCaption" class="preview-caption"></div>
+    </div>
+  </div>
+
+  <!-- Script -->
+  <script src="script.js"></script>
+</body>
+</html>
