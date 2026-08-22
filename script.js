@@ -1,6 +1,7 @@
 let currentPageIndex = 0;
 const totalPages = 7;
 let quizPassed = false;
+let scratchInitialized = false;
 
 function showPage(index) {
   if (index < 0 || index >= totalPages) return;
@@ -57,6 +58,48 @@ window.nextPage = nextPage;
 window.prevPage = prevPage;
 window.triggerGrandCelebration = triggerGrandCelebration;
 
+// Audio Synthesis Setup
+let audioCtx = null;
+function initAudio() {
+  if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  if (audioCtx.state === "suspended") audioCtx.resume();
+}
+
+function playPopSound() {
+  try {
+    initAudio();
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.type = "triangle";
+    osc.frequency.setValueAtTime(520, audioCtx.currentTime);
+    osc.frequency.exponentialRampToValueAtTime(30, audioCtx.currentTime + 0.09);
+    gain.gain.setValueAtTime(1, audioCtx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.09);
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+    osc.start();
+    osc.stop(audioCtx.currentTime + 0.09);
+  } catch(e){}
+}
+
+function playSuccessChime() {
+  try {
+    initAudio();
+    const now = audioCtx.currentTime;
+    [523.25, 659.25, 783.99, 1046.50].forEach((freq, idx) => {
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.frequency.setValueAtTime(freq, now + idx * 0.08);
+      gain.gain.setValueAtTime(0.2, now + idx * 0.08);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.08 + 0.35);
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      osc.start(now + idx * 0.08);
+      osc.stop(now + idx * 0.08 + 0.35);
+    });
+  } catch(e){}
+}
+
 document.addEventListener("DOMContentLoaded", () => {
 
   // 1. Step Indicator Navigation
@@ -66,137 +109,108 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // 2. Interactive Constellation Canvas
   const canvas = document.getElementById("starsCanvas");
-  const ctx = canvas.getContext("2d");
-  let stars = [];
-  let mouse = { x: null, y: null };
+  if (canvas) {
+    const ctx = canvas.getContext("2d");
+    let stars = [];
+    let mouse = { x: null, y: null };
 
-  function resizeCanvas() {
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-  }
-  resizeCanvas();
-  window.addEventListener("resize", resizeCanvas);
+    function resizeCanvas() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+    resizeCanvas();
+    window.addEventListener("resize", resizeCanvas);
 
-  for (let i = 0; i < 60; i++) {
-    stars.push({
-      x: Math.random() * window.innerWidth,
-      y: Math.random() * window.innerHeight,
-      radius: Math.random() * 1.6 + 0.5,
-      vx: (Math.random() - 0.5) * 0.4,
-      vy: (Math.random() - 0.5) * 0.4
-    });
-  }
-
-  window.addEventListener("mousemove", (e) => { mouse.x = e.x; mouse.y = e.y; });
-  window.addEventListener("mouseleave", () => { mouse.x = null; mouse.y = null; });
-
-  function animateStars() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-    stars.forEach((star) => {
-      star.x += star.vx;
-      star.y += star.vy;
-      if (star.x < 0 || star.x > canvas.width) star.vx *= -1;
-      if (star.y < 0 || star.y > canvas.height) star.vy *= -1;
-
-      ctx.beginPath();
-      ctx.arc(star.x, star.y, star.radius, 0, Math.PI * 2);
-      ctx.fillStyle = "rgba(192, 132, 252, 0.7)";
-      ctx.fill();
-
-      if (mouse.x) {
-        const dx = mouse.x - star.x;
-        const dy = mouse.y - star.y;
-        const dist = Math.sqrt(dx * dx + dy * dy);
-        if (dist < 120) {
-          ctx.beginPath();
-          ctx.moveTo(star.x, star.y);
-          ctx.lineTo(mouse.x, mouse.y);
-          ctx.strokeStyle = `rgba(56, 189, 248, ${1 - dist / 120})`;
-          ctx.lineWidth = 0.6;
-          ctx.stroke();
-        }
-      }
-    });
-
-    requestAnimationFrame(animateStars);
-  }
-  animateStars();
-
-  // 3. Audio Synthesis
-  let audioCtx = null;
-  function initAudio() {
-    if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    if (audioCtx.state === "suspended") audioCtx.resume();
-  }
-
-  function playPopSound() {
-    try {
-      initAudio();
-      const osc = audioCtx.createOscillator();
-      const gain = audioCtx.createGain();
-      osc.type = "triangle";
-      osc.frequency.setValueAtTime(520, audioCtx.currentTime);
-      osc.frequency.exponentialRampToValueAtTime(30, audioCtx.currentTime + 0.09);
-      gain.gain.setValueAtTime(1, audioCtx.currentTime);
-      gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.09);
-      osc.connect(gain);
-      gain.connect(audioCtx.destination);
-      osc.start();
-      osc.stop(audioCtx.currentTime + 0.09);
-    } catch(e){}
-  }
-
-  function playSuccessChime() {
-    try {
-      initAudio();
-      const now = audioCtx.currentTime;
-      [523.25, 659.25, 783.99, 1046.50].forEach((freq, idx) => {
-        const osc = audioCtx.createOscillator();
-        const gain = audioCtx.createGain();
-        osc.frequency.setValueAtTime(freq, now + idx * 0.08);
-        gain.gain.setValueAtTime(0.2, now + idx * 0.08);
-        gain.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.08 + 0.35);
-        osc.connect(gain);
-        gain.connect(audioCtx.destination);
-        osc.start(now + idx * 0.08);
-        osc.stop(now + idx * 0.08 + 0.35);
+    for (let i = 0; i < 60; i++) {
+      stars.push({
+        x: Math.random() * window.innerWidth,
+        y: Math.random() * window.innerHeight,
+        radius: Math.random() * 1.6 + 0.5,
+        vx: (Math.random() - 0.5) * 0.4,
+        vy: (Math.random() - 0.5) * 0.4
       });
-    } catch(e){}
+    }
+
+    window.addEventListener("mousemove", (e) => { mouse.x = e.x; mouse.y = e.y; });
+    window.addEventListener("mouseleave", () => { mouse.x = null; mouse.y = null; });
+
+    function animateStars() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      stars.forEach((star) => {
+        star.x += star.vx;
+        star.y += star.vy;
+        if (star.x < 0 || star.x > canvas.width) star.vx *= -1;
+        if (star.y < 0 || star.y > canvas.height) star.vy *= -1;
+
+        ctx.beginPath();
+        ctx.arc(star.x, star.y, star.radius, 0, Math.PI * 2);
+        ctx.fillStyle = "rgba(192, 132, 252, 0.7)";
+        ctx.fill();
+
+        if (mouse.x) {
+          const dx = mouse.x - star.x;
+          const dy = mouse.y - star.y;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+          if (dist < 120) {
+            ctx.beginPath();
+            ctx.moveTo(star.x, star.y);
+            ctx.lineTo(mouse.x, mouse.y);
+            ctx.strokeStyle = `rgba(56, 189, 248, ${1 - dist / 120})`;
+            ctx.lineWidth = 0.6;
+            ctx.stroke();
+          }
+        }
+      });
+
+      requestAnimationFrame(animateStars);
+    }
+    animateStars();
   }
 
-  // 4. Live Countdown
+  // 3. Live Countdown
   const targetDate = new Date("2026-08-24T00:00:00").getTime();
   function updateTimer() {
     const diff = targetDate - new Date().getTime();
     if (diff <= 0) return;
-    document.getElementById("days").textContent = String(Math.floor(diff / (1000 * 60 * 60 * 24))).padStart(2, "0");
-    document.getElementById("hours").textContent = String(Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60))).padStart(2, "0");
-    document.getElementById("minutes").textContent = String(Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60))).padStart(2, "0");
-    document.getElementById("seconds").textContent = String(Math.floor((diff % (1000 * 60)) / 1000)).padStart(2, "0");
+    const d = document.getElementById("days");
+    const h = document.getElementById("hours");
+    const m = document.getElementById("minutes");
+    const s = document.getElementById("seconds");
+    if (d) d.textContent = String(Math.floor(diff / (1000 * 60 * 60 * 24))).padStart(2, "0");
+    if (h) h.textContent = String(Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60))).padStart(2, "0");
+    if (m) m.textContent = String(Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60))).padStart(2, "0");
+    if (s) s.textContent = String(Math.floor((diff % (1000 * 60)) / 1000)).padStart(2, "0");
   }
   setInterval(updateTimer, 1000);
   updateTimer();
 
-  // 5. Balloon Popping
+  // 4. Balloon Popping
   document.querySelectorAll(".balloon").forEach((b) => {
     b.addEventListener("click", () => {
       if (b.classList.contains("popped")) return;
       playPopSound();
       b.classList.add("popped");
       setTimeout(() => {
-        document.getElementById("modalYearTitle").textContent = b.dataset.year;
-        document.getElementById("modalMessageText").textContent = b.dataset.message;
-        document.getElementById("messageModal").classList.add("active");
+        const title = document.getElementById("modalYearTitle");
+        const msg = document.getElementById("modalMessageText");
+        const modal = document.getElementById("messageModal");
+        if (title) title.textContent = b.dataset.year;
+        if (msg) msg.textContent = b.dataset.message;
+        if (modal) modal.classList.add("active");
       }, 250);
     });
   });
 
-  document.getElementById("closeModal").addEventListener("click", () => {
-    document.getElementById("messageModal").classList.remove("active");
-  });
+  const closeModalBtn = document.getElementById("closeModal");
+  if (closeModalBtn) {
+    closeModalBtn.addEventListener("click", () => {
+      const modal = document.getElementById("messageModal");
+      if (modal) modal.classList.remove("active");
+    });
+  }
 
-  // 6. Couple Quiz
+  // 5. Couple Quiz
   const quizQuestions = [
     { question: "1. What is my favourite food?", options: ["Cheesy Burst Pizza 🍕", "Hot & Spicy Biriyani 🍗✨", "Fried Chicken 🍗", "Paneer Butter Masala 🍛"], correctIndex: 1 },
     { question: "2. What is my favourite color in the world?", options: ["Royal Sky Blue 💙", "Midnight Black 🖤", "Crimson Red ❤️", "Lavender Purple 💜"], correctIndex: 0 },
@@ -206,12 +220,17 @@ document.addEventListener("DOMContentLoaded", () => {
   let currentQuiz = 0;
   function loadQuiz() {
     const q = quizQuestions[currentQuiz];
-    document.getElementById("questionCount").textContent = `Question ${currentQuiz + 1} of ${quizQuestions.length}`;
-    document.getElementById("progressBar").style.width = `${((currentQuiz + 1) / quizQuestions.length) * 100}%`;
-    document.getElementById("quizQuestion").textContent = q.question;
+    const qCount = document.getElementById("questionCount");
+    const pBar = document.getElementById("progressBar");
+    const qTitle = document.getElementById("quizQuestion");
     const opts = document.getElementById("quizOptions");
-    opts.innerHTML = "";
 
+    if (qCount) qCount.textContent = `Question ${currentQuiz + 1} of ${quizQuestions.length}`;
+    if (pBar) pBar.style.width = `${((currentQuiz + 1) / quizQuestions.length) * 100}%`;
+    if (qTitle) qTitle.textContent = q.question;
+    if (!opts) return;
+
+    opts.innerHTML = "";
     q.options.forEach((opt, idx) => {
       const btn = document.createElement("button");
       btn.className = "quiz-btn";
@@ -223,18 +242,23 @@ document.addEventListener("DOMContentLoaded", () => {
           playSuccessChime();
           setTimeout(() => {
             currentQuiz++;
-            if (currentQuiz < quizQuestions.length) loadQuiz();
-            else {
+            if (currentQuiz < quizQuestions.length) {
+              loadQuiz();
+            } else {
               quizPassed = true;
-              document.getElementById("quizContent").style.display = "none";
-              document.getElementById("quizResult").classList.remove("hidden");
-              document.getElementById("quizNextBtn").style.display = "inline-block";
+              const content = document.getElementById("quizContent");
+              const result = document.getElementById("quizResult");
+              const nextBtn = document.getElementById("quizNextBtn");
+              if (content) content.style.display = "none";
+              if (result) result.classList.remove("hidden");
+              if (nextBtn) nextBtn.style.display = "inline-block";
               triggerGrandCelebration();
             }
           }, 700);
         } else {
           btn.classList.add("incorrect");
-          document.getElementById("quizAlert").classList.remove("hidden");
+          const alertEl = document.getElementById("quizAlert");
+          if (alertEl) alertEl.classList.remove("hidden");
           setTimeout(() => { currentQuiz = 0; loadQuiz(); }, 1200);
         }
       });
@@ -243,7 +267,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
   loadQuiz();
 
-  // 7. Reasons I Love You Jar
+  // 6. Reasons I Love You Jar
   const reasons = [
     "Your smile turns my hardest days completely upside down.",
     "You stayed by my side even when I made mistakes and had rough moments.",
@@ -253,42 +277,61 @@ document.addEventListener("DOMContentLoaded", () => {
     "7 years later, my heart still skips a beat when you call my name."
   ];
   let reasonIdx = 0;
-  document.getElementById("loveJar").addEventListener("click", () => {
-    playSuccessChime();
-    document.getElementById("reasonIndex").textContent = `Note #${reasonIdx + 1}`;
-    document.getElementById("reasonText").textContent = `"${reasons[reasonIdx]}"`;
-    reasonIdx = (reasonIdx + 1) % reasons.length;
-  });
+  const jarEl = document.getElementById("loveJar");
+  if (jarEl) {
+    jarEl.addEventListener("click", () => {
+      playSuccessChime();
+      const rIndex = document.getElementById("reasonIndex");
+      const rText = document.getElementById("reasonText");
+      if (rIndex) rIndex.textContent = `Note #${reasonIdx + 1}`;
+      if (rText) rText.textContent = `"${reasons[reasonIdx]}"`;
+      reasonIdx = (reasonIdx + 1) % reasons.length;
+    });
+  }
 
-  // 8. Photo Lightbox
+  // 7. Photo Lightbox
   document.querySelectorAll(".photo-card").forEach((card) => {
     card.addEventListener("click", () => {
-      document.getElementById("modalPreviewImage").src = card.querySelector("img").src;
-      document.getElementById("modalPreviewCaption").textContent = card.querySelector(".photo-caption").textContent;
-      document.getElementById("imageModal").classList.add("active");
+      const img = card.querySelector("img");
+      const caption = card.querySelector(".photo-caption");
+      const previewImg = document.getElementById("modalPreviewImage");
+      const previewCaption = document.getElementById("modalPreviewCaption");
+      const modal = document.getElementById("imageModal");
+
+      if (previewImg && img) previewImg.src = img.src;
+      if (previewCaption && caption) previewCaption.textContent = caption.textContent;
+      if (modal) modal.classList.add("active");
     });
   });
-  document.getElementById("closeImageModal").addEventListener("click", () => {
-    document.getElementById("imageModal").classList.remove("active");
-  });
 
-  // 9. Floating Heart Shower
-  document.getElementById("heart-shower-btn").addEventListener("click", () => {
-    playSuccessChime();
-    for (let i = 0; i < 25; i++) {
-      const h = document.createElement("div");
-      h.className = "floating-heart";
-      h.textContent = ["💖", "💙", "💜", "✨", "🌸"][Math.floor(Math.random() * 5)];
-      h.style.left = `${Math.random() * window.innerWidth}px`;
-      h.style.top = `${window.innerHeight - 30}px`;
-      h.style.setProperty("--duration", `${Math.random() * 2 + 2}s`);
-      h.style.setProperty("--sway", `${(Math.random() - 0.5) * 150}px`);
-      document.body.appendChild(h);
-      setTimeout(() => h.remove(), 4000);
-    }
-  });
+  const closeImageBtn = document.getElementById("closeImageModal");
+  if (closeImageBtn) {
+    closeImageBtn.addEventListener("click", () => {
+      const modal = document.getElementById("imageModal");
+      if (modal) modal.classList.remove("active");
+    });
+  }
 
-  // 10. Mixtape Player Controller
+  // 8. Floating Heart Shower
+  const heartBtn = document.getElementById("heart-shower-btn");
+  if (heartBtn) {
+    heartBtn.addEventListener("click", () => {
+      playSuccessChime();
+      for (let i = 0; i < 25; i++) {
+        const h = document.createElement("div");
+        h.className = "floating-heart";
+        h.textContent = ["💖", "💙", "💜", "✨", "🌸"][Math.floor(Math.random() * 5)];
+        h.style.left = `${Math.random() * window.innerWidth}px`;
+        h.style.top = `${window.innerHeight - 30}px`;
+        h.style.setProperty("--duration", `${Math.random() * 2 + 2}s`);
+        h.style.setProperty("--sway", `${(Math.random() - 0.5) * 150}px`);
+        document.body.appendChild(h);
+        setTimeout(() => h.remove(), 4000);
+      }
+    });
+  }
+
+  // 9. Mixtape Player Controller
   const playlist = [
     { title: "Special Anniversary Track", src: "vr.mpeg" }
   ];
@@ -297,55 +340,128 @@ document.addEventListener("DOMContentLoaded", () => {
   const playBtn = document.getElementById("playTrackBtn");
 
   function loadTrack(idx) {
+    if (!audioEl) return;
     audioEl.src = playlist[idx].src;
-    document.getElementById("trackTitle").textContent = playlist[idx].title;
-    document.getElementById("trackArtist").textContent = `Track ${idx + 1} of ${playlist.length}`;
+    const titleEl = document.getElementById("trackTitle");
+    const artistEl = document.getElementById("trackArtist");
+    if (titleEl) titleEl.textContent = playlist[idx].title;
+    if (artistEl) artistEl.textContent = `Track ${idx + 1} of ${playlist.length}`;
   }
   loadTrack(currentTrack);
 
-  playBtn.addEventListener("click", () => {
-    if (audioEl.paused) {
-      audioEl.play().then(() => playBtn.textContent = "⏸️").catch(() => alert("Place 'vr.mpeg' in this folder!"));
-    } else {
-      audioEl.pause();
-      playBtn.textContent = "▶️";
-    }
-  });
-
+  if (playBtn && audioEl) {
+    playBtn.addEventListener("click", () => {
+      if (audioEl.paused) {
+        audioEl.play().then(() => playBtn.textContent = "⏸️").catch(() => alert("Place 'vr.mpeg' in this folder!"));
+      } else {
+        audioEl.pause();
+        playBtn.textContent = "▶️";
+      }
+    });
+  }
 });
 
-// 11. HTML5 Canvas Scratch Card
+// 10. Auto-Clearing Scratch Card ($\ge$ 50% Clear & Scroll Fix)
 function initScratchCard() {
   const canvas = document.getElementById("scratchCanvas");
-  if (!canvas) return;
-  const ctx = canvas.getContext("2d");
+  if (!canvas || scratchInitialized) return;
 
-  // Paint silver overlay
+  const ctx = canvas.getContext("2d", { willReadFrequently: true });
+  scratchInitialized = true;
+
+  const rect = canvas.getBoundingClientRect();
+  canvas.width = rect.width || 480;
+  canvas.height = rect.height || 420;
+
+  // Draw silver surface
   ctx.fillStyle = "#cbd5e1";
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 
+  // Surface text
   ctx.fillStyle = "#475569";
-  ctx.font = "bold 20px Poppins";
+  ctx.font = "bold 18px Poppins, sans-serif";
   ctx.textAlign = "center";
-  ctx.fillText("🪙 Scratch Here With Love ❤️", canvas.width / 2, canvas.height / 2);
+  ctx.fillText("🪙 Scratch 50% to Reveal Letter ❤️", canvas.width / 2, canvas.height / 2);
 
   let isDrawing = false;
+  let isCompleted = false;
+  let throttleCount = 0;
+
+  function checkScratchPercentage() {
+    if (isCompleted) return;
+
+    const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    const pixels = imageData.data;
+    let transparentCount = 0;
+    const totalSampled = pixels.length / 64;
+
+    for (let i = 3; i < pixels.length; i += 64) {
+      if (pixels[i] === 0) {
+        transparentCount++;
+      }
+    }
+
+    const percentage = (transparentCount / totalSampled) * 100;
+
+    if (percentage >= 50) {
+      isCompleted = true;
+      autoClearCanvas();
+    }
+  }
+
+  function autoClearCanvas() {
+    canvas.style.transition = "opacity 0.6s ease";
+    canvas.style.opacity = "0";
+
+    playSuccessChime();
+    triggerGrandCelebration();
+
+    setTimeout(() => {
+      canvas.style.display = "none";
+      canvas.style.pointerEvents = "none"; // Unlocks scrolling on letter
+    }, 600);
+  }
+
   function scratch(e) {
-    if (!isDrawing) return;
-    const rect = canvas.getBoundingClientRect();
-    const x = (e.clientX || (e.touches && e.touches[0].clientX)) - rect.left;
-    const y = (e.clientY || (e.touches && e.touches[0].clientY)) - rect.top;
+    if (!isDrawing || isCompleted) return;
+
+    const bRect = canvas.getBoundingClientRect();
+    const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+    const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+
+    const x = clientX - bRect.left;
+    const y = clientY - bRect.top;
 
     ctx.globalCompositeOperation = "destination-out";
     ctx.beginPath();
-    ctx.arc(x, y, 25, 0, Math.PI * 2);
+    ctx.arc(x, y, 32, 0, Math.PI * 2);
     ctx.fill();
+
+    throttleCount++;
+    if (throttleCount % 6 === 0) {
+      checkScratchPercentage();
+    }
   }
 
-  canvas.addEventListener("mousedown", () => isDrawing = true);
-  canvas.addEventListener("touchstart", () => isDrawing = true);
-  window.addEventListener("mouseup", () => isDrawing = false);
-  window.addEventListener("touchend", () => isDrawing = false);
+  canvas.addEventListener("mousedown", (e) => {
+    isDrawing = true;
+    scratch(e);
+  });
+  window.addEventListener("mouseup", () => {
+    isDrawing = false;
+    checkScratchPercentage();
+  });
   canvas.addEventListener("mousemove", scratch);
-  canvas.addEventListener("touchmove", scratch);
+
+  canvas.addEventListener("touchstart", (e) => {
+    isDrawing = true;
+    scratch(e);
+  }, { passive: true });
+  window.addEventListener("touchend", () => {
+    isDrawing = false;
+    checkScratchPercentage();
+  });
+  canvas.addEventListener("touchmove", (e) => {
+    scratch(e);
+  }, { passive: true });
 }
