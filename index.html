@@ -47,18 +47,21 @@
   <!-- Step Progress Indicator -->
   <nav class="step-indicator">
     <button class="step-dot active" data-step="0" title="Welcome"></button>
-    <button class="step-dot" data-step="1" title="Our Timeline"></button>
-    <button class="step-dot" data-step="2" title="Balloons"></button>
-    <button class="step-dot" data-step="3" title="Love Quiz"></button>
-    <button class="step-dot" data-step="4" title="Reasons Jar"></button>
-    <button class="step-dot" data-step="5" title="Memories"></button>
-    <button class="step-dot" data-step="6" title="Scratch Letter"></button>
+    <button class="step-dot" data-step="1" title="Stats"></button>
+    <button class="step-dot" data-step="2" title="Our Timeline"></button>
+    <button class="step-dot" data-step="3" title="Balloons"></button>
+    <button class="step-dot" data-step="4" title="Love Quiz"></button>
+    <button class="step-dot" data-step="5" title="Reasons Jar"></button>
+    <button class="step-dot" data-step="6" title="Memories"></button>
+    <button class="step-dot" data-step="7" title="Date Wheel"></button>
+    <button class="step-dot" data-step="8" title="Wish Lantern"></button>
+    <button class="step-dot" data-step="9" title="Scratch Letter"></button>
   </nav>
 
   <!-- Main Multi-Page Screen Container -->
   <main class="page-container">
 
-    <!-- PAGE 1: HERO & COUNTDOWN -->
+    <!-- PAGE 0: HERO & COUNTDOWN -->
     <section class="app-page active" id="page-0">
       <div class="page-card text-center tilt-card">
         <span class="anniversary-badge">✨ 7 Magical Years of Love ✨</span>
@@ -76,13 +79,51 @@
         </div>
 
         <button class="nav-btn next-page-btn" onclick="nextPage()">
-          Explore Our Story 📖 ➔
+          Our 7 Years in Numbers 📊 ➔
         </button>
       </div>
     </section>
 
-    <!-- PAGE 2: STORY TIMELINE -->
+    <!-- PAGE 1: 7 YEARS IN NUMBERS DASHBOARD -->
     <section class="app-page" id="page-1">
+      <div class="page-card text-center">
+        <div class="section-header">
+          <h2>Our 7 Years in Numbers</h2>
+          <p>Every single second of loving you has been magical</p>
+        </div>
+
+        <div class="stats-grid">
+          <div class="stat-card">
+            <span class="stat-number" data-target="2557">0</span>
+            <span class="stat-label">Days of Love ❤️</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-number" data-target="61368">0</span>
+            <span class="stat-label">Hours Together ⏳</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-number" data-target="3682080">0</span>
+            <span class="stat-label">Minutes of Smiles ✨</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-number">1 & Only</span>
+            <span class="stat-label">VR Renuka 👑</span>
+          </div>
+          <div class="stat-card stat-wide">
+            <span class="stat-number">♾️ Infinity</span>
+            <span class="stat-label">Years of Happiness Waiting For Us 💕</span>
+          </div>
+        </div>
+
+        <div class="page-nav-actions">
+          <button class="nav-btn prev-btn" onclick="prevPage()">⬅ Back</button>
+          <button class="nav-btn next-page-btn" onclick="nextPage()">Explore Our Story 📖 ➔</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- PAGE 2: STORY TIMELINE -->
+    <section class="app-page" id="page-2">
       <div class="page-card">
         <div class="section-header text-center">
           <h2>Our Chapter Milestones</h2>
@@ -132,7 +173,7 @@
     </section>
 
     <!-- PAGE 3: 7 BALLOONS POP GAME -->
-    <section class="app-page" id="page-2">
+    <section class="app-page" id="page-3">
       <div class="page-card text-center">
         <div class="section-header">
           <h2>Pop the 7 Balloons!</h2>
@@ -171,7 +212,7 @@
     </section>
 
     <!-- PAGE 4: LOVE QUIZ -->
-    <section class="app-page" id="page-3">
+    <section class="app-page" id="page-4">
       <div class="page-card">
         <div class="section-header text-center">
           <h2>The Love Quiz</h2>
@@ -204,7 +245,7 @@
     </section>
 
     <!-- PAGE 5: REASONS I LOVE YOU JAR -->
-    <section class="app-page" id="page-4">
+    <section class="app-page" id="page-5">
       <div class="page-card text-center">
         <div class="section-header">
           <h2>Reasons I Love You</h2>
@@ -232,7 +273,7 @@
     </section>
 
     <!-- PAGE 6: PHOTO GALLERY (3D FLIP POLAROIDS) -->
-    <section class="app-page" id="page-5">
+    <section class="app-page" id="page-6">
       <div class="page-card text-center">
         <div class="section-header">
           <h2>Captured Moments</h2>
@@ -240,7 +281,6 @@
         </div>
 
         <div class="photo-grid">
-          <!-- Polaroid 1 -->
           <div class="polaroid-card">
             <div class="polaroid-inner">
               <div class="polaroid-front">
@@ -256,7 +296,6 @@
             </div>
           </div>
 
-          <!-- Polaroid 2 -->
           <div class="polaroid-card">
             <div class="polaroid-inner">
               <div class="polaroid-front">
@@ -272,7 +311,6 @@
             </div>
           </div>
 
-          <!-- Polaroid 3 -->
           <div class="polaroid-card">
             <div class="polaroid-inner">
               <div class="polaroid-front">
@@ -291,13 +329,61 @@
 
         <div class="page-nav-actions">
           <button class="nav-btn prev-btn" onclick="prevPage()">⬅ Back</button>
+          <button class="nav-btn next-page-btn" onclick="nextPage()">Pick Next Date 🎡 ➔</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- PAGE 7: DATE NIGHT SPINNER WHEEL -->
+    <section class="app-page" id="page-7">
+      <div class="page-card text-center">
+        <div class="section-header">
+          <h2>Our Next Romantic Date</h2>
+          <p>Tap the wheel to spin and decide where we go next! 🎡</p>
+        </div>
+
+        <div class="wheel-wrapper">
+          <div class="wheel-pointer">🔻</div>
+          <canvas id="wheelCanvas" width="300" height="300"></canvas>
+          <button class="spin-center-btn" id="spinWheelBtn">SPIN 💖</button>
+        </div>
+
+        <div class="date-result-box" id="dateResultBox">
+          <span class="date-result-title" id="dateResultTitle">Ready to Spin!</span>
+          <p id="dateResultDesc">Tap "SPIN" to pick our official anniversary date!</p>
+        </div>
+
+        <div class="page-nav-actions">
+          <button class="nav-btn prev-btn" onclick="prevPage()">⬅ Back</button>
+          <button class="nav-btn next-page-btn" onclick="nextPage()">Wish Lanterns 🏮 ➔</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- PAGE 8: DIGITAL WISH LANTERN SKY -->
+    <section class="app-page" id="page-8">
+      <div class="page-card text-center">
+        <div class="section-header">
+          <h2>Release a Sky Lantern</h2>
+          <p>Type your sweetest wish for our future and send it into the night sky 🏮</p>
+        </div>
+
+        <div class="lantern-input-box">
+          <input type="text" id="lanternWishInput" placeholder="Type your wish here, Renuka... ❤️" maxlength="80" />
+          <button class="nav-btn primary-btn" id="releaseLanternBtn">Release Lantern ✨</button>
+        </div>
+
+        <div class="lantern-sky" id="lanternSky"></div>
+
+        <div class="page-nav-actions" style="margin-top: 25px;">
+          <button class="nav-btn prev-btn" onclick="prevPage()">⬅ Back</button>
           <button class="nav-btn next-page-btn" onclick="nextPage()">Scratch My Letter 🪙 ➔</button>
         </div>
       </div>
     </section>
 
-    <!-- PAGE 7: AUTO-CLEARING SCRATCH LETTER -->
-    <section class="app-page" id="page-6">
+    <!-- PAGE 9: AUTO-CLEARING SCRATCH LETTER -->
+    <section class="app-page" id="page-9">
       <div class="page-card text-center">
         <div class="section-header">
           <h2>Scratch to Reveal My Letter</h2>
@@ -326,7 +412,6 @@
               <span class="signature-text">Forever Yours, ❤️</span>
             </div>
           </div>
-          <!-- Scratch Overlay Canvas -->
           <canvas id="scratchCanvas"></canvas>
         </div>
 
@@ -339,7 +424,7 @@
 
   </main>
 
-  <!-- Balloon Pop Modal -->
+  <!-- Modals -->
   <div class="modal" id="messageModal">
     <div class="modal-content">
       <button class="close-btn" id="closeModal">&times;</button>
@@ -349,7 +434,6 @@
     </div>
   </div>
 
-  <!-- Photo Zoom Lightbox Modal -->
   <div class="modal" id="imageModal">
     <div class="image-modal-content">
       <button class="close-btn" id="closeImageModal">&times;</button>
