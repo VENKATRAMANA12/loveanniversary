@@ -1,5 +1,5 @@
 let currentPageIndex = 0;
-const totalPages = 7;
+const totalPages = 10;
 let quizPassed = false;
 let scratchInitialized = false;
 
@@ -7,8 +7,8 @@ let scratchInitialized = false;
 function showPage(index) {
   if (index < 0 || index >= totalPages) return;
 
-  // Progression Gate
-  if (index >= 4 && !quizPassed) {
+  // Lock: Cannot view features past quiz until quiz is passed
+  if (index >= 5 && !quizPassed) {
     alert("Renuka! ❤️ Complete the Love Quiz correctly to unlock our memory vault!");
     return;
   }
@@ -23,7 +23,11 @@ function showPage(index) {
     dot.classList.toggle("active", idx === currentPageIndex);
   });
 
-  if (currentPageIndex === 6) {
+  if (currentPageIndex === 1) {
+    animateNumbersDashboard();
+  } else if (currentPageIndex === 7) {
+    drawDateWheel();
+  } else if (currentPageIndex === 9) {
     initScratchCard();
   }
 
@@ -31,7 +35,7 @@ function showPage(index) {
 }
 
 function nextPage() {
-  if (currentPageIndex === 3 && !quizPassed) return;
+  if (currentPageIndex === 4 && !quizPassed) return;
   if (currentPageIndex < totalPages - 1) showPage(currentPageIndex + 1);
 }
 
@@ -59,7 +63,7 @@ window.nextPage = nextPage;
 window.prevPage = prevPage;
 window.triggerGrandCelebration = triggerGrandCelebration;
 
-// 2. Synthesized Sound Effects (Zero External Asset Dependency)
+// 2. Synthesized Sound Effects
 let audioCtx = null;
 function initAudio() {
   if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -108,7 +112,7 @@ document.addEventListener("DOMContentLoaded", () => {
     dot.addEventListener("click", () => showPage(parseInt(dot.dataset.step, 10)));
   });
 
-  // Cursor Sparkle Trail (Desktop & Touch)
+  // Cursor Sparkle FX
   function createSparkle(x, y) {
     const sparkle = document.createElement("div");
     sparkle.className = "sparkle-particle";
@@ -127,27 +131,10 @@ document.addEventListener("DOMContentLoaded", () => {
     if (sparkleThrottle % 3 === 0) createSparkle(e.clientX, e.clientY);
   });
   window.addEventListener("touchmove", (e) => {
-    if (e.touches && e.touches[0]) {
-      createSparkle(e.touches[0].clientX, e.touches[0].clientY);
-    }
+    if (e.touches && e.touches[0]) createSparkle(e.touches[0].clientX, e.touches[0].clientY);
   }, { passive: true });
 
-  // 3D Parallax Tilt on Cards (Desktop)
-  const tiltCards = document.querySelectorAll(".tilt-card");
-  tiltCards.forEach((card) => {
-    card.addEventListener("mousemove", (e) => {
-      if (window.innerWidth < 768) return;
-      const rect = card.getBoundingClientRect();
-      const x = e.clientX - rect.left - rect.width / 2;
-      const y = e.clientY - rect.top - rect.height / 2;
-      card.style.transform = `perspective(1000px) rotateX(${-y / 28}deg) rotateY(${x / 28}deg)`;
-    });
-    card.addEventListener("mouseleave", () => {
-      card.style.transform = "perspective(1000px) rotateX(0deg) rotateY(0deg)";
-    });
-  });
-
-  // Constellation Background Canvas
+  // Constellation Canvas
   const canvas = document.getElementById("starsCanvas");
   if (canvas) {
     const ctx = canvas.getContext("2d");
@@ -249,7 +236,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // Couple Quiz Logic
+  // Quiz Logic
   const quizQuestions = [
     { question: "1. What is my favourite food?", options: ["Cheesy Burst Pizza 🍕", "Hot & Spicy Biriyani 🍗✨", "Fried Chicken 🍗", "Paneer Butter Masala 🍛"], correctIndex: 1 },
     { question: "2. What is my favourite color in the world?", options: ["Royal Sky Blue 💙", "Midnight Black 🖤", "Crimson Red ❤️", "Lavender Purple 💜"], correctIndex: 0 },
@@ -285,9 +272,12 @@ document.addEventListener("DOMContentLoaded", () => {
               loadQuiz();
             } else {
               quizPassed = true;
-              document.getElementById("quizContent").style.display = "none";
-              document.getElementById("quizResult").classList.remove("hidden");
-              document.getElementById("quizNextBtn").style.display = "inline-block";
+              const content = document.getElementById("quizContent");
+              const result = document.getElementById("quizResult");
+              const nextBtn = document.getElementById("quizNextBtn");
+              if (content) content.style.display = "none";
+              if (result) result.classList.remove("hidden");
+              if (nextBtn) nextBtn.style.display = "inline-block";
               triggerGrandCelebration();
             }
           }, 700);
@@ -317,8 +307,10 @@ document.addEventListener("DOMContentLoaded", () => {
   if (jarEl) {
     jarEl.addEventListener("click", () => {
       playSuccessChime();
-      document.getElementById("reasonIndex").textContent = `Note #${reasonIdx + 1}`;
-      document.getElementById("reasonText").textContent = `"${reasons[reasonIdx]}"`;
+      const rIndex = document.getElementById("reasonIndex");
+      const rText = document.getElementById("reasonText");
+      if (rIndex) rIndex.textContent = `Note #${reasonIdx + 1}`;
+      if (rText) rText.textContent = `"${reasons[reasonIdx]}"`;
       reasonIdx = (reasonIdx + 1) % reasons.length;
     });
   }
@@ -347,7 +339,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // Floating Heart Shower Button
+  // Floating Heart Shower
   const heartBtn = document.getElementById("heart-shower-btn");
   if (heartBtn) {
     heartBtn.addEventListener("click", () => {
@@ -366,7 +358,30 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // Mixtape Audio Controller
+  // Wish Lantern Release
+  const releaseBtn = document.getElementById("releaseLanternBtn");
+  const wishInput = document.getElementById("lanternWishInput");
+  const sky = document.getElementById("lanternSky");
+
+  if (releaseBtn && wishInput && sky) {
+    releaseBtn.addEventListener("click", () => {
+      const text = wishInput.value.trim();
+      if (!text) {
+        alert("Type a wish for us first, Renuka! ❤️");
+        return;
+      }
+      playSuccessChime();
+      const lantern = document.createElement("div");
+      lantern.className = "floating-lantern";
+      lantern.style.left = `${Math.random() * 70 + 15}%`;
+      lantern.innerHTML = `<span>🏮</span><span class="lantern-text">${text}</span>`;
+      sky.appendChild(lantern);
+      wishInput.value = "";
+      setTimeout(() => lantern.remove(), 6000);
+    });
+  }
+
+  // Mixtape Player
   const audioEl = document.getElementById("bg-music");
   const playBtn = document.getElementById("playTrackBtn");
 
@@ -386,7 +401,114 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 });
 
-// 3. Scratch Card: Auto-Clearing at $\ge$ 50% & Scroll Restoration
+// 3. Numbers Counter Animation
+function animateNumbersDashboard() {
+  document.querySelectorAll(".stat-number[data-target]").forEach((el) => {
+    const target = parseInt(el.dataset.target, 10);
+    let count = 0;
+    const increment = target / 50;
+    const interval = setInterval(() => {
+      count += increment;
+      if (count >= target) {
+        el.textContent = target.toLocaleString();
+        clearInterval(interval);
+      } else {
+        el.textContent = Math.floor(count).toLocaleString();
+      }
+    }, 25);
+  });
+}
+
+// 4. Interactive Date Wheel
+const dateOptions = [
+  { title: "Nemilichery Lunch Date 🍱", desc: "Eating delicious food together at your favourite spot." },
+  { title: "Temple Sunset Walk 🌅", desc: "Visiting Tirutani & Veeraragavar Koil for quiet moments & blessings." },
+  { title: "Midnight Biriyani Feast 🍗", desc: "Hot & spicy biriyani date just for the two of us!" },
+  { title: "Late Night Long Drive 🚗✨", desc: "Singing our favourite playlist with no destination in mind." },
+  { title: "Movie & Ice Cream Night 🍦🎬", desc: "Cozy movie marathon with sweet treats and warm hugs." }
+];
+
+let wheelAngle = 0;
+let isSpinning = false;
+
+function drawDateWheel() {
+  const canvas = document.getElementById("wheelCanvas");
+  if (!canvas) return;
+  const ctx = canvas.getContext("2d");
+  const numSlices = dateOptions.length;
+  const sliceAngle = (2 * Math.PI) / numSlices;
+  const colors = ["#38bdf8", "#c084fc", "#bae6fd", "#f3e8ff", "#fde047"];
+
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  const cx = canvas.width / 2;
+  const cy = canvas.height / 2;
+  const radius = canvas.width / 2 - 10;
+
+  for (let i = 0; i < numSlices; i++) {
+    const startAngle = i * sliceAngle + wheelAngle;
+    const endAngle = startAngle + sliceAngle;
+
+    ctx.beginPath();
+    ctx.moveTo(cx, cy);
+    ctx.arc(cx, cy, radius, startAngle, endAngle);
+    ctx.fillStyle = colors[i % colors.length];
+    ctx.fill();
+    ctx.stroke();
+
+    ctx.save();
+    ctx.translate(cx, cy);
+    ctx.rotate(startAngle + sliceAngle / 2);
+    ctx.fillStyle = "#070712";
+    ctx.font = "bold 11px Poppins";
+    ctx.textAlign = "right";
+    ctx.fillText(dateOptions[i].title.split(" ")[0], radius - 15, 4);
+    ctx.restore();
+  }
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  const spinBtn = document.getElementById("spinWheelBtn");
+  if (spinBtn) {
+    spinBtn.addEventListener("click", () => {
+      if (isSpinning) return;
+      isSpinning = true;
+      playPopSound();
+
+      const spinDuration = 3000;
+      const start = performance.now();
+      const extraRounds = (Math.floor(Math.random() * 4) + 4) * (2 * Math.PI);
+      const randomOffset = Math.random() * (2 * Math.PI);
+      const targetAngle = wheelAngle + extraRounds + randomOffset;
+      const initialAngle = wheelAngle;
+
+      function animateWheel(now) {
+        const elapsed = now - start;
+        const progress = Math.min(elapsed / spinDuration, 1);
+        const easeOut = 1 - Math.pow(1 - progress, 3);
+        wheelAngle = initialAngle + (targetAngle - initialAngle) * easeOut;
+        drawDateWheel();
+
+        if (progress < 1) {
+          requestAnimationFrame(animateWheel);
+        } else {
+          isSpinning = false;
+          playSuccessChime();
+          triggerGrandCelebration();
+
+          const numSlices = dateOptions.length;
+          const normalized = (2 * Math.PI - (wheelAngle % (2 * Math.PI)) + Math.PI * 1.5) % (2 * Math.PI);
+          const index = Math.floor(normalized / ((2 * Math.PI) / numSlices)) % numSlices;
+
+          document.getElementById("dateResultTitle").textContent = dateOptions[index].title;
+          document.getElementById("dateResultDesc").textContent = dateOptions[index].desc;
+        }
+      }
+      requestAnimationFrame(animateWheel);
+    });
+  }
+});
+
+// 5. Auto-Clearing Scratch Card ($\ge$ 50%)
 function initScratchCard() {
   const canvas = document.getElementById("scratchCanvas");
   if (!canvas || scratchInitialized) return;
@@ -398,7 +520,6 @@ function initScratchCard() {
   canvas.width = rect.width || 480;
   canvas.height = rect.height || 400;
 
-  // Silver scratch surface
   ctx.fillStyle = "#cbd5e1";
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 
@@ -440,7 +561,7 @@ function initScratchCard() {
 
     setTimeout(() => {
       canvas.style.display = "none";
-      canvas.style.pointerEvents = "none"; // Unlocks smooth touch/mouse scrolling on letter text
+      canvas.style.pointerEvents = "none";
     }, 600);
   }
 
