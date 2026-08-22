@@ -3,12 +3,13 @@ const totalPages = 7;
 let quizPassed = false;
 let scratchInitialized = false;
 
+// 1. Navigation Flow
 function showPage(index) {
   if (index < 0 || index >= totalPages) return;
 
-  // Lock: Cannot view gallery or scratch letter until quiz is done
+  // Progression Gate
   if (index >= 4 && !quizPassed) {
-    alert("Renuka! ❤️ Complete the Love Quiz correctly to unlock the rest of the surprise!");
+    alert("Renuka! ❤️ Complete the Love Quiz correctly to unlock our memory vault!");
     return;
   }
 
@@ -58,7 +59,7 @@ window.nextPage = nextPage;
 window.prevPage = prevPage;
 window.triggerGrandCelebration = triggerGrandCelebration;
 
-// Audio Synthesis Setup
+// 2. Synthesized Sound Effects (Zero External Asset Dependency)
 let audioCtx = null;
 function initAudio() {
   if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -102,12 +103,51 @@ function playSuccessChime() {
 
 document.addEventListener("DOMContentLoaded", () => {
 
-  // 1. Step Indicator Navigation
+  // Step Indicators
   document.querySelectorAll(".step-dot").forEach((dot) => {
     dot.addEventListener("click", () => showPage(parseInt(dot.dataset.step, 10)));
   });
 
-  // 2. Interactive Constellation Canvas
+  // Cursor Sparkle Trail (Desktop & Touch)
+  function createSparkle(x, y) {
+    const sparkle = document.createElement("div");
+    sparkle.className = "sparkle-particle";
+    const size = Math.random() * 6 + 4;
+    sparkle.style.width = `${size}px`;
+    sparkle.style.height = `${size}px`;
+    sparkle.style.left = `${x}px`;
+    sparkle.style.top = `${y}px`;
+    document.body.appendChild(sparkle);
+    setTimeout(() => sparkle.remove(), 800);
+  }
+
+  let sparkleThrottle = 0;
+  window.addEventListener("mousemove", (e) => {
+    sparkleThrottle++;
+    if (sparkleThrottle % 3 === 0) createSparkle(e.clientX, e.clientY);
+  });
+  window.addEventListener("touchmove", (e) => {
+    if (e.touches && e.touches[0]) {
+      createSparkle(e.touches[0].clientX, e.touches[0].clientY);
+    }
+  }, { passive: true });
+
+  // 3D Parallax Tilt on Cards (Desktop)
+  const tiltCards = document.querySelectorAll(".tilt-card");
+  tiltCards.forEach((card) => {
+    card.addEventListener("mousemove", (e) => {
+      if (window.innerWidth < 768) return;
+      const rect = card.getBoundingClientRect();
+      const x = e.clientX - rect.left - rect.width / 2;
+      const y = e.clientY - rect.top - rect.height / 2;
+      card.style.transform = `perspective(1000px) rotateX(${-y / 28}deg) rotateY(${x / 28}deg)`;
+    });
+    card.addEventListener("mouseleave", () => {
+      card.style.transform = "perspective(1000px) rotateX(0deg) rotateY(0deg)";
+    });
+  });
+
+  // Constellation Background Canvas
   const canvas = document.getElementById("starsCanvas");
   if (canvas) {
     const ctx = canvas.getContext("2d");
@@ -121,13 +161,13 @@ document.addEventListener("DOMContentLoaded", () => {
     resizeCanvas();
     window.addEventListener("resize", resizeCanvas);
 
-    for (let i = 0; i < 60; i++) {
+    for (let i = 0; i < 50; i++) {
       stars.push({
         x: Math.random() * window.innerWidth,
         y: Math.random() * window.innerHeight,
-        radius: Math.random() * 1.6 + 0.5,
-        vx: (Math.random() - 0.5) * 0.4,
-        vy: (Math.random() - 0.5) * 0.4
+        radius: Math.random() * 1.5 + 0.5,
+        vx: (Math.random() - 0.5) * 0.35,
+        vy: (Math.random() - 0.5) * 0.35
       });
     }
 
@@ -152,12 +192,12 @@ document.addEventListener("DOMContentLoaded", () => {
           const dx = mouse.x - star.x;
           const dy = mouse.y - star.y;
           const dist = Math.sqrt(dx * dx + dy * dy);
-          if (dist < 120) {
+          if (dist < 110) {
             ctx.beginPath();
             ctx.moveTo(star.x, star.y);
             ctx.lineTo(mouse.x, mouse.y);
-            ctx.strokeStyle = `rgba(56, 189, 248, ${1 - dist / 120})`;
-            ctx.lineWidth = 0.6;
+            ctx.strokeStyle = `rgba(56, 189, 248, ${1 - dist / 110})`;
+            ctx.lineWidth = 0.5;
             ctx.stroke();
           }
         }
@@ -168,7 +208,7 @@ document.addEventListener("DOMContentLoaded", () => {
     animateStars();
   }
 
-  // 3. Live Countdown
+  // Live Countdown to August 24, 2026
   const targetDate = new Date("2026-08-24T00:00:00").getTime();
   function updateTimer() {
     const diff = targetDate - new Date().getTime();
@@ -185,7 +225,7 @@ document.addEventListener("DOMContentLoaded", () => {
   setInterval(updateTimer, 1000);
   updateTimer();
 
-  // 4. Balloon Popping
+  // Balloon Popping
   document.querySelectorAll(".balloon").forEach((b) => {
     b.addEventListener("click", () => {
       if (b.classList.contains("popped")) return;
@@ -205,12 +245,11 @@ document.addEventListener("DOMContentLoaded", () => {
   const closeModalBtn = document.getElementById("closeModal");
   if (closeModalBtn) {
     closeModalBtn.addEventListener("click", () => {
-      const modal = document.getElementById("messageModal");
-      if (modal) modal.classList.remove("active");
+      document.getElementById("messageModal").classList.remove("active");
     });
   }
 
-  // 5. Couple Quiz
+  // Couple Quiz Logic
   const quizQuestions = [
     { question: "1. What is my favourite food?", options: ["Cheesy Burst Pizza 🍕", "Hot & Spicy Biriyani 🍗✨", "Fried Chicken 🍗", "Paneer Butter Masala 🍛"], correctIndex: 1 },
     { question: "2. What is my favourite color in the world?", options: ["Royal Sky Blue 💙", "Midnight Black 🖤", "Crimson Red ❤️", "Lavender Purple 💜"], correctIndex: 0 },
@@ -246,12 +285,9 @@ document.addEventListener("DOMContentLoaded", () => {
               loadQuiz();
             } else {
               quizPassed = true;
-              const content = document.getElementById("quizContent");
-              const result = document.getElementById("quizResult");
-              const nextBtn = document.getElementById("quizNextBtn");
-              if (content) content.style.display = "none";
-              if (result) result.classList.remove("hidden");
-              if (nextBtn) nextBtn.style.display = "inline-block";
+              document.getElementById("quizContent").style.display = "none";
+              document.getElementById("quizResult").classList.remove("hidden");
+              document.getElementById("quizNextBtn").style.display = "inline-block";
               triggerGrandCelebration();
             }
           }, 700);
@@ -267,7 +303,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
   loadQuiz();
 
-  // 6. Reasons I Love You Jar
+  // Reasons Jar
   const reasons = [
     "Your smile turns my hardest days completely upside down.",
     "You stayed by my side even when I made mistakes and had rough moments.",
@@ -281,38 +317,37 @@ document.addEventListener("DOMContentLoaded", () => {
   if (jarEl) {
     jarEl.addEventListener("click", () => {
       playSuccessChime();
-      const rIndex = document.getElementById("reasonIndex");
-      const rText = document.getElementById("reasonText");
-      if (rIndex) rIndex.textContent = `Note #${reasonIdx + 1}`;
-      if (rText) rText.textContent = `"${reasons[reasonIdx]}"`;
+      document.getElementById("reasonIndex").textContent = `Note #${reasonIdx + 1}`;
+      document.getElementById("reasonText").textContent = `"${reasons[reasonIdx]}"`;
       reasonIdx = (reasonIdx + 1) % reasons.length;
     });
   }
 
-  // 7. Photo Lightbox
-  document.querySelectorAll(".photo-card").forEach((card) => {
-    card.addEventListener("click", () => {
-      const img = card.querySelector("img");
-      const caption = card.querySelector(".photo-caption");
-      const previewImg = document.getElementById("modalPreviewImage");
-      const previewCaption = document.getElementById("modalPreviewCaption");
-      const modal = document.getElementById("imageModal");
+  // Polaroid Flip & Lightbox
+  document.querySelectorAll(".polaroid-card").forEach((card) => {
+    card.addEventListener("click", (e) => {
+      if (e.target.classList.contains("zoom-btn")) return;
+      card.classList.toggle("flipped");
+    });
+  });
 
-      if (previewImg && img) previewImg.src = img.src;
-      if (previewCaption && caption) previewCaption.textContent = caption.textContent;
-      if (modal) modal.classList.add("active");
+  document.querySelectorAll(".zoom-btn").forEach((btn) => {
+    btn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      document.getElementById("modalPreviewImage").src = btn.dataset.img;
+      document.getElementById("modalPreviewCaption").textContent = btn.dataset.cap;
+      document.getElementById("imageModal").classList.add("active");
     });
   });
 
   const closeImageBtn = document.getElementById("closeImageModal");
   if (closeImageBtn) {
     closeImageBtn.addEventListener("click", () => {
-      const modal = document.getElementById("imageModal");
-      if (modal) modal.classList.remove("active");
+      document.getElementById("imageModal").classList.remove("active");
     });
   }
 
-  // 8. Floating Heart Shower
+  // Floating Heart Shower Button
   const heartBtn = document.getElementById("heart-shower-btn");
   if (heartBtn) {
     heartBtn.addEventListener("click", () => {
@@ -331,28 +366,18 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // 9. Mixtape Player Controller
-  const playlist = [
-    { title: "Special Anniversary Track", src: "vr.mpeg" }
-  ];
-  let currentTrack = 0;
+  // Mixtape Audio Controller
   const audioEl = document.getElementById("bg-music");
   const playBtn = document.getElementById("playTrackBtn");
-
-  function loadTrack(idx) {
-    if (!audioEl) return;
-    audioEl.src = playlist[idx].src;
-    const titleEl = document.getElementById("trackTitle");
-    const artistEl = document.getElementById("trackArtist");
-    if (titleEl) titleEl.textContent = playlist[idx].title;
-    if (artistEl) artistEl.textContent = `Track ${idx + 1} of ${playlist.length}`;
-  }
-  loadTrack(currentTrack);
 
   if (playBtn && audioEl) {
     playBtn.addEventListener("click", () => {
       if (audioEl.paused) {
-        audioEl.play().then(() => playBtn.textContent = "⏸️").catch(() => alert("Place 'vr.mpeg' in this folder!"));
+        audioEl.play().then(() => {
+          playBtn.textContent = "⏸️";
+        }).catch(() => {
+          alert("Place 'vr.mpeg' in the root project folder to play music!");
+        });
       } else {
         audioEl.pause();
         playBtn.textContent = "▶️";
@@ -361,7 +386,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 });
 
-// 10. Auto-Clearing Scratch Card ($\ge$ 50% Clear & Scroll Fix)
+// 3. Scratch Card: Auto-Clearing at $\ge$ 50% & Scroll Restoration
 function initScratchCard() {
   const canvas = document.getElementById("scratchCanvas");
   if (!canvas || scratchInitialized) return;
@@ -371,15 +396,14 @@ function initScratchCard() {
 
   const rect = canvas.getBoundingClientRect();
   canvas.width = rect.width || 480;
-  canvas.height = rect.height || 420;
+  canvas.height = rect.height || 400;
 
-  // Draw silver surface
+  // Silver scratch surface
   ctx.fillStyle = "#cbd5e1";
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-  // Surface text
   ctx.fillStyle = "#475569";
-  ctx.font = "bold 18px Poppins, sans-serif";
+  ctx.font = "bold 16px Poppins, sans-serif";
   ctx.textAlign = "center";
   ctx.fillText("🪙 Scratch 50% to Reveal Letter ❤️", canvas.width / 2, canvas.height / 2);
 
@@ -396,9 +420,7 @@ function initScratchCard() {
     const totalSampled = pixels.length / 64;
 
     for (let i = 3; i < pixels.length; i += 64) {
-      if (pixels[i] === 0) {
-        transparentCount++;
-      }
+      if (pixels[i] === 0) transparentCount++;
     }
 
     const percentage = (transparentCount / totalSampled) * 100;
@@ -418,7 +440,7 @@ function initScratchCard() {
 
     setTimeout(() => {
       canvas.style.display = "none";
-      canvas.style.pointerEvents = "none"; // Unlocks scrolling on letter
+      canvas.style.pointerEvents = "none"; // Unlocks smooth touch/mouse scrolling on letter text
     }, 600);
   }
 
@@ -443,25 +465,11 @@ function initScratchCard() {
     }
   }
 
-  canvas.addEventListener("mousedown", (e) => {
-    isDrawing = true;
-    scratch(e);
-  });
-  window.addEventListener("mouseup", () => {
-    isDrawing = false;
-    checkScratchPercentage();
-  });
+  canvas.addEventListener("mousedown", (e) => { isDrawing = true; scratch(e); });
+  window.addEventListener("mouseup", () => { isDrawing = false; checkScratchPercentage(); });
   canvas.addEventListener("mousemove", scratch);
 
-  canvas.addEventListener("touchstart", (e) => {
-    isDrawing = true;
-    scratch(e);
-  }, { passive: true });
-  window.addEventListener("touchend", () => {
-    isDrawing = false;
-    checkScratchPercentage();
-  });
-  canvas.addEventListener("touchmove", (e) => {
-    scratch(e);
-  }, { passive: true });
+  canvas.addEventListener("touchstart", (e) => { isDrawing = true; scratch(e); }, { passive: true });
+  window.addEventListener("touchend", () => { isDrawing = false; checkScratchPercentage(); });
+  canvas.addEventListener("touchmove", (e) => { scratch(e); }, { passive: true });
 }
